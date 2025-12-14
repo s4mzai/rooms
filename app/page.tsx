@@ -1,15 +1,16 @@
 "use client"
 import { useState } from "react";
 import { TextMorph } from "@/components/ui/text-morph";
+import { TypingAnimation } from "@/components/ui/typing-animation"
 
 export default function Home() {
   const [text, setText] = useState<string>("Create Room")
   const [disable, setDisable] = useState<boolean>(false)
   return (
     <div className="flex flex-col items-center justify-center h-dvh px-4 bg-black">
-      <div>
-        <h1 className="text-green-500 text-4xl font-bold tracking-wide mb-2 text-center">{">"}private_chat</h1>
-        <p className="text-zinc-400 text-center text-lg font-medium mb-6 tracking-wide">A private, self-destructing chat room</p>
+      <div className="w-full max-w-md mx-auto mb-6 text-center">
+        <h1 className="text-green-500 text-4xl font-bold tracking-wide mb-2 ">{">"}private_chat</h1>
+        <TypingAnimation className="text-zinc-400 text-lg font-medium tracking-wide">A private, self-destructing chat room</TypingAnimation>
       </div>
       <div className="w-full max-w-md mx-auto flex flex-col bg-zinc-900/50 justify-center gap-4 p-6 sm:p-8 shadow-lg border border-zinc-800 min-h-[240px]">
         <h2 className="text-zinc-400">Your Identity</h2>
