@@ -2,10 +2,14 @@
 import { useState } from "react";
 import { TextMorph } from "@/components/ui/text-morph";
 import { TypingAnimation } from "@/components/ui/typing-animation"
+import useUsername from "@/hooks/username";
+
 
 export default function Home() {
   const [text, setText] = useState<string>("Create Room")
   const [disable, setDisable] = useState<boolean>(false)
+
+  const username = useUsername()
   return (
     <div className="flex flex-col items-center justify-center h-dvh px-4 bg-black">
       <div className="w-full max-w-md mx-auto mb-6 text-center">
@@ -14,7 +18,7 @@ export default function Home() {
       </div>
       <div className="w-full max-w-md mx-auto flex flex-col bg-zinc-900/50 justify-center gap-4 p-6 sm:p-8 shadow-lg border border-zinc-800 min-h-[240px]">
         <h2 className="text-zinc-400">Your Identity</h2>
-        <input type="text" value={"hello"} disabled={true} className="bg-black/80 text-zinc-400 p-2 w-full" />
+        <input type="text" value={username} disabled={true} className="bg-black/80 text-zinc-400 p-2 w-full" />
         {/* TODO: ADD A WORK HERE */}
         <button onClick={()=>{
             setDisable(true)
