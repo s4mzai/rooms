@@ -99,44 +99,48 @@ const Page = ()=>{
       
     return(
         <div className="bg-black text-white min-h-dvh flex flex-col justify-between">
-            <div className="flex flex-col sm:flex-row gap-5 sm:gap-0 items-center justify-evenly p-5 border-b border-zinc-800/70 bg-zinc-900/40">
-                <div className="w-full">
-                    <h2 className="uppercase text-zinc-400 text-sm ">ROOM ID</h2>
-                    <div className="flex gap-4">
-                        <p className="font-lg text-green-500">{roomId}</p>
-                        <ButtonCopy duration={1000} loadingDuration={500} onCopy={async()=>{await navigator.clipboard.writeText(roomId);}}/>
+            <div className="border-b border-zinc-800/70 bg-zinc-900/40">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 p-3 sm:p-5">
+                    <div className="flex-1 min-w-0 w-full sm:w-auto">
+                        <h2 className="uppercase text-zinc-400 text-xs sm:text-sm mb-1.5 sm:mb-2">ROOM ID</h2>
+                        <div className="flex items-center gap-2 sm:gap-4 justify-between sm:justify-start">
+                            <p className="font-lg text-green-500 text-sm sm:text-base truncate">{roomId}</p>
+                            <ButtonCopy duration={1000} loadingDuration={500} onCopy={async()=>{await navigator.clipboard.writeText(roomId);}} className="py-1.5"/>
+                        </div>
                     </div>
-                </div>
 
-                <div className="h-10 w-0.5 bg-white/10 mr-5 hidden sm:block"/>
-                <div className="w-full flex items-center sm:justify-end gap-20">
-                    <div>
-                        <h2 className="uppercase text-zinc-400 text-sm ">SELF-DESTRUCT</h2>
-                        {timeRemaining!=null && (
-                            <p className={`font-lg ${timeRemaining > 60 ? 'text-white' : 'text-red-500'}`}>
-                                {formatTime(timeRemaining)}
-                            </p>
-                        )}
-                        {timeRemaining==null && <p>--:--</p>}
+                    <div className="h-px w-full sm:h-10 sm:w-0.5 bg-white/10 sm:mr-5"/>
+                    
+                    <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4 sm:gap-20">
+                        <div className="flex-shrink-0">
+                            <h2 className="uppercase text-zinc-400 text-xs sm:text-sm mb-1.5 sm:mb-2">SELF-DESTRUCT</h2>
+                            {timeRemaining!=null && (
+                                <p className={`font-lg text-sm sm:text-base ${timeRemaining > 60 ? 'text-white' : 'text-red-500'}`}>
+                                    {formatTime(timeRemaining)}
+                                </p>
+                            )}
+                            {timeRemaining==null && <p className="text-sm sm:text-base">--:--</p>}
+                        </div>
+                        <button
+                            className="relative px-3 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-xs cursor-pointer overflow-hidden rounded-sm bg-zinc-800 hover:bg-zinc-800/80 active:bg-zinc-800 focus:bg-zinc-800 disabled:bg-zinc-800 disabled:opacity-50 text-red-500 font-bold hover:text-red-500/80 whitespace-nowrap flex-shrink-0 transition-colors"
+                            onClick={()=>destroyRoom()}
+                        >
+                            DESTROY NOW
+                        </button>
                     </div>
-                    <button
-                    className="relative p-2 text-xs cursor-pointer overflow-hidden rounded-sm bg-zinc-800 hover:bg-zinc-800/80 active:bg-zinc-800 focus:bg-zinc-800 disabled:bg-zinc-800 disabled:opacity-50 text-red-500 font-bold hover:text-red-500/80"
-                    onClick={()=>destroyRoom()}
-                    >DESTROY NOW
-                    </button>
                 </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin">
-                {messages?.messages.length === 0 && (
-                    <div className="flex items-center justify-center h-full">
-                    <p className="text-zinc-600 text-sm font-mono">
-                        No messages yet, start the conversation.
-                    </p>
+            <div className="flex-1 overflow-y-auto p-4 scrollbar-thin flex flex-col">
+                {messages?.messages.length === 0 ? (
+                    <div className="flex-1 flex items-center justify-center">
+                        <p className="text-zinc-600 text-sm font-mono text-center">
+                            No messages yet, start the conversation.
+                        </p>
                     </div>
-                )}
-                
-                {messages?.messages.map((msg) => (
+                ) : (
+                    <div className="space-y-4">
+                        {messages?.messages.map((msg) => (
                     <div key={msg.id} className="flex flex-col items-start">
                     <div className="max-w-[80%] group">
                         <div className="flex items-baseline gap-3 mb-1">
@@ -158,7 +162,9 @@ const Page = ()=>{
                         </p>
                     </div>
                     </div>
-                ))}
+                        ))}
+                    </div>
+                )}
             </div>
 
             <div className="flex gap-5 items-center p-5 border-b border-zinc-800/70 bg-zinc-900/40 h-25 md:px-">
