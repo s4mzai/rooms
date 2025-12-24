@@ -90,6 +90,12 @@ const Page = ()=>{
       
         return `${minutes}:${seconds.toString().padStart(2, "0")}`;
     }
+
+    const { mutate: destroyRoom } = useMutation({
+        mutationFn: async () => {
+          await client.room.delete(null, { query: { roomId } })
+        },
+      })
       
     return(
         <div className="bg-black text-white min-h-dvh flex flex-col justify-between">
@@ -113,7 +119,11 @@ const Page = ()=>{
                         )}
                         {timeRemaining==null && <p>--:--</p>}
                     </div>
-                    <button className="relative p-2 text-xs cursor-pointer overflow-hidden rounded-sm bg-zinc-800 hover:bg-zinc-800/80 active:bg-zinc-800 focus:bg-zinc-800 disabled:bg-zinc-800 disabled:opacity-50 text-red-500 font-bold hover:text-red-500/80">DESTROY NOW</button>
+                    <button
+                    className="relative p-2 text-xs cursor-pointer overflow-hidden rounded-sm bg-zinc-800 hover:bg-zinc-800/80 active:bg-zinc-800 focus:bg-zinc-800 disabled:bg-zinc-800 disabled:opacity-50 text-red-500 font-bold hover:text-red-500/80"
+                    onClick={()=>destroyRoom()}
+                    >DESTROY NOW
+                    </button>
                 </div>
             </div>
 
