@@ -20,9 +20,9 @@ const Page = ()=>{
 
     const { mutate: sendMessage, isPending } = useMutation({
         mutationFn: async ({ text }: { text: string }) => {
+          setInput("")
           await client.messages.post({ sender: username, text }, { query: { roomId } })
     
-          setInput("")
         },
     })
     

@@ -5,7 +5,7 @@ import { TypingAnimation } from "@/components/ui/typing-animation"
 import useUsername from "@/hooks/username";
 import { useMutation } from "@tanstack/react-query";
 import { client } from "@/lib/eden";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 
 export default function Home() {
@@ -13,6 +13,10 @@ export default function Home() {
   const [disable, setDisable] = useState<boolean>(false)
   const router = useRouter()
   const username = useUsername()
+  
+  const searchParams = useSearchParams()
+  const wasDestroyed = searchParams.get("destroyed") === "true"
+  const error = searchParams.get("error")
   
   const MemoTyping = useMemo(() => (
     <TypingAnimation className="text-zinc-400 text-lg font-medium tracking-wide">
@@ -33,10 +37,29 @@ export default function Home() {
     setText(text == "Create Room"? "Creating Room...":"Create Room")
     createRoom()
   }
+  const errorMessage = wasDestroyed 
+    ? { title: "ROOM DESTROYED", message: "All messages were permanently deleted." }
+    : error === "room-not-found"
+    ? { title: "ROOM NOT FOUND", message: "This room may have expired or never existed." }
+    : error === "room-full"
+    ? { title: "ROOM FULL", message: "This room is at maximum capacity." }
+    : null;
+
   return (
-    <div className="flex flex-col items-center justify-center h-dvh px-4 bg-black">
-      <div className="w-full max-w-md mx-auto mb-6 text-center">
-        <h1 className="text-green-500 text-4xl font-bold tracking-wide mb-2 ">{">"}private_chat</h1>
+    <div className="flex flex-col items-center justify-center min-h-dvh px-4 py-8 sm:py-12 bg-black gap-6">
+      <div className="w-full max-w-md">
+        {errorMessage && (
+          <div className="w-full bg-red-950/50 border border-red-900 p-4 sm:p-6 text-center rounded">
+            <p className="text-red-500 text-sm sm:text-base font-bold">{errorMessage.title}</p>
+            <p className="text-zinc-500 text-xs sm:text-sm mt-1">
+              {errorMessage.message}
+            </p>
+          </div>
+        )}
+      </div>
+      
+      <div className="w-full max-w-md mx-auto text-center">
+        <h1 className="text-green-500 text-3xl sm:text-4xl font-bold tracking-wide mb-2 ">{">"}private_chat</h1>
         {MemoTyping}
       </div>
       <div className="w-full max-w-md mx-auto flex flex-col bg-zinc-900/50 justify-center gap-4 p-6 sm:p-8 shadow-lg border border-zinc-800 min-h-[240px]">
