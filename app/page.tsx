@@ -1,5 +1,5 @@
 "use client"
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { TextMorph } from "@/components/ui/text-morph";
 import { TypingAnimation } from "@/components/ui/typing-animation"
 import useUsername from "@/hooks/username";
@@ -7,8 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import { client } from "@/lib/eden";
 import { useRouter, useSearchParams } from "next/navigation";
 
-
-export default function Home() {
+function HomeContent() {
   const [text, setText] = useState<string>("Create Room")
   const [disable, setDisable] = useState<boolean>(false)
   const router = useRouter()
@@ -73,5 +72,17 @@ export default function Home() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-dvh bg-black">
+        <div className="text-green-500">Loading...</div>
+      </div>
+    }>
+      <HomeContent />
+    </Suspense>
   );
 }
