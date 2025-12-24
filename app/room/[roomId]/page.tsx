@@ -9,8 +9,11 @@ import { useEffect, useRef, useState } from "react"
 import { format } from "date-fns";
 import { useRealtime } from "@/lib/realtime-client"
 import { useRouter } from "next/navigation"
+import HamButton from "@/components/hamButton"
+import { Send } from "lucide-react"
 
 const Page = ()=>{
+  const [open, setOpen] = useState<boolean>(false);
     const params = useParams()
     const roomId = String(params.roomId)
     const username = useUsername();
@@ -98,8 +101,9 @@ const Page = ()=>{
       })
       
     return(
-        <div className="bg-black text-white min-h-dvh flex flex-col justify-between">
-            <div className="border-b border-zinc-800/70 bg-zinc-900/40">
+        <div className="relative bg-black text-white min-h-dvh flex flex-col justify-between">
+            <HamButton open={open} onClick={() => setOpen((prevState) => !prevState)}/>
+            <div className={`border-b border-zinc-800/70 bg-black sm:bg-zinc-900/40 ${open ? "block absolute w-full top-10" : "hidden"} sm:block sm:static sm:top-0 sm:w-full`}> 
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 p-3 sm:p-5">
                     <div className="flex-1 min-w-0 w-full sm:w-auto">
                         <h2 className="uppercase text-zinc-400 text-xs sm:text-sm mb-1.5 sm:mb-2">ROOM ID</h2>
@@ -131,7 +135,7 @@ const Page = ()=>{
                 </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 scrollbar-thin flex flex-col">
+            <div className="flex-1 overflow-y-auto p-4 scrollbar-thin flex flex-col mt-15 sm:mt-0">
                 {messages?.messages.length === 0 ? (
                     <div className="flex-1 flex items-center justify-center">
                         <p className="text-zinc-600 text-sm font-mono text-center">
@@ -167,11 +171,11 @@ const Page = ()=>{
                 )}
             </div>
 
-            <div className="flex gap-5 items-center p-5 border-b border-zinc-800/70 bg-zinc-900/40 h-25 md:px-">
+            <div className="flex gap-1.5 items-center p-5 border-b border-zinc-800/70 bg-zinc-900/40 h-fit sm:h-25">
                 <input
                     autoFocus
                     type="text"
-                    className="w-full bg-black border border-zinc-800 focus:border-zinc-700 focus:outline-none transition-colors text-zinc-100 placeholder:text-zinc-700 py-3 pl-8 pr-4 text-sm"
+                    className="w-full bg-black border border-zinc-800 focus:border-zinc-700 focus:outline-none transition-colors text-zinc-100 placeholder:text-zinc-700 py-2 px-4 text-sm"
                     placeholder="Type Message..."
                     value={input}
                     onKeyDown={(e) => {
@@ -189,9 +193,9 @@ const Page = ()=>{
                     inputRef.current?.focus()
                   }}
                 disabled={!input.trim() || isPending}
-                className="uppercase bg-zinc-700 py-2 px-5 cursor-pointer hover:text-white/90"
+                className="uppercase rounded p-2 cursor-pointer hover:text-white/90"
                 >
-                    SEND
+                    <Send size={20} />
                 </button>
             </div>
         </div>
