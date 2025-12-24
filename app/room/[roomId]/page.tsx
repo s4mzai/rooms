@@ -5,7 +5,7 @@ import useUsername from "@/hooks/username"
 import { client } from "@/lib/eden"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useParams } from "next/navigation"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { format } from "date-fns";
 import { useRealtime } from "@/lib/realtime-client"
 import { useRouter } from "next/navigation"
@@ -15,6 +15,7 @@ const Page = ()=>{
     const roomId = String(params.roomId)
     const username = useUsername();
     const [input,setInput] = useState<string>("")
+    const [ timeRemaining, setTimeRemaining ] = useState<number | null>(null)
     const inputRef = useRef<HTMLInputElement>(null);
     const router = useRouter()
 
@@ -26,6 +27,40 @@ const Page = ()=>{
         },
     })
     
+    const {data: ttlData} = useQuery({
+        queryKey:["ttl",roomId],
+        queryFn: async()=>{
+            const res = await client.room.ttl.get({
+                query:{ roomId }})
+                return res.data
+        }
+    })
+
+    useEffect(() => {
+        if (ttlData?.ttl !== undefined) setTimeRemaining(ttlData.ttl)
+      }, [ttlData])
+    
+      useEffect(() => {
+        if (timeRemaining === null || timeRemaining < 0) return
+    
+        if (timeRemaining === 0) {
+          router.push("/?destroyed=true")
+          return
+        }
+    
+        const interval = setInterval(() => {
+          setTimeRemaining((prev) => {
+            if (prev === null || prev <= 1) {
+              clearInterval(interval)
+              return 0
+            }
+            return prev - 1
+          })
+        }, 1000)
+    
+        return () => clearInterval(interval)
+      }, [timeRemaining, router])
+
     const { data: messages, refetch } = useQuery({
         queryKey: ["messages", roomId],
         queryFn: async () => {
@@ -48,6 +83,14 @@ const Page = ()=>{
         }
         },
     })
+
+    function formatTime(sec: number) {
+        const minutes = Math.floor(sec / 60);
+        const seconds = sec % 60;
+      
+        return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+    }
+      
     return(
         <div className="bg-black text-white min-h-dvh flex flex-col justify-between">
             <div className="flex flex-col sm:flex-row gap-5 sm:gap-0 items-center justify-evenly p-5 border-b border-zinc-800/70 bg-zinc-900/40">
@@ -63,7 +106,12 @@ const Page = ()=>{
                 <div className="w-full flex items-center sm:justify-end gap-20">
                     <div>
                         <h2 className="uppercase text-zinc-400 text-sm ">SELF-DESTRUCT</h2>
-                        <p className="font-lg text-red-500">0:51</p>
+                        {timeRemaining!=null && (
+                            <p className={`font-lg ${timeRemaining > 60 ? 'text-white' : 'text-red-500'}`}>
+                                {formatTime(timeRemaining)}
+                            </p>
+                        )}
+                        {timeRemaining==null && <p>--:--</p>}
                     </div>
                     <button className="relative p-2 text-xs cursor-pointer overflow-hidden rounded-sm bg-zinc-800 hover:bg-zinc-800/80 active:bg-zinc-800 focus:bg-zinc-800 disabled:bg-zinc-800 disabled:opacity-50 text-red-500 font-bold hover:text-red-500/80">DESTROY NOW</button>
                 </div>
